@@ -18,3 +18,13 @@ So if my issue was named `Deploy Coveytown to Live Service`, then my feature bra
 branch should only contain the work for one task. Feature branches will be merged into develop when they are finished and unit tested. After a feature
 is completed and merged with develop, then the branch should be deleted. 
 
+## Getting Started
+In order to start working on a new task, navigate to the task's corresponding issue in the Issues menu. Then click on Create a Branch under Development: 
+
+![Creating feature branch from issue menu](GitworkflowIssueMenu.png)
+
+Then in the Branch name field, make sure that the branch name starts with 'feature'. Click Create Branch. 
+
+![Creating feature branch from branch menu](GitworkflowBranchMenu.png)
+
+Copy the commands and run them on your local machine to get access to your new branch. Now you can start working on your feature. Remember to not commit files containing credentials (.env) to the remote server. 
