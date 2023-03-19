@@ -146,6 +146,12 @@ export default class Town {
       this._updatePlayerLocation(newPlayer, movementData);
     });
 
+    // Register an event listener for the client socket: if the client updates their
+    // location using teleport, inform the CoveyTownController
+    socket.on('playerTeleport', (movementData: PlayerLocation) => {
+      this._updatePlayerLocation(newPlayer, movementData);
+    });
+
     // Set up a listener to process updates to interactables.
     // Currently only knows how to process updates for ViewingAreas and PosterSessionAreas, and
     // ignores any other updates for any other kind of interactable.

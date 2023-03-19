@@ -91,5 +91,6 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   chatMessage: (message: ChatMessage) => void;
   playerMovement: (movementData: PlayerLocation) => void;
+  playerTeleport: (movementData: PlayerLocation) => void;
   interactableUpdate: (update: Interactable) => void;
 }
