@@ -29,7 +29,7 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
 
   set location(newLocation: PlayerLocation) {
     this._location = newLocation;
-    this._updateGameComponentLocation();
+    this._updateGameComponentLocation(false);
     this.emit('movement', newLocation);
   }
 
@@ -49,7 +49,14 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
     return { id: this.id, userName: this.userName, location: this.location };
   }
 
-  private _updateGameComponentLocation() {
+  public teleport(newLocation: PlayerLocation) {
+    // change player location without walking animations
+    this._location = newLocation;
+    this._updateGameComponentLocation(true);
+    this.emit('movement', newLocation);
+  }
+
+  private _updateGameComponentLocation(teleport: boolean) {
     if (this.gameObjects && !this.gameObjects.locationManagedByGameScene) {
       const { sprite, label } = this.gameObjects;
       if (!sprite.anims) return;
@@ -57,7 +64,7 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
       sprite.setY(this.location.y);
       label.setX(this.location.x);
       label.setY(this.location.y - 20);
-      if (this.location.moving) {
+      if (this.location.moving && !teleport) {
         sprite.anims.play(`misa-${this.location.rotation}-walk`, true);
       } else {
         sprite.anims.stop();

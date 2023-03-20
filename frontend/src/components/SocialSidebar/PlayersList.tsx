@@ -13,7 +13,7 @@ import PlayerName from './PlayerName';
  */
 export default function PlayersInTownList(): JSX.Element {
   const players = usePlayers();
-  const { friendlyName, townID, userName, userID } = useTownController();
+  const { friendlyName, townID, userName, userID, emitTeleport } = useTownController();
   const sorted = players.concat([]);
   sorted.sort((p1, p2) =>
     p1.userName.localeCompare(p2.userName, undefined, { numeric: true, sensitivity: 'base' }),
@@ -22,6 +22,7 @@ export default function PlayersInTownList(): JSX.Element {
   const handleTeleport = (player: PlayerController) => {
     if (userID !== player.id) {
       console.log('teleporting from' + userName + ' to ' + player.userName);
+      emitTeleport(player);
     }
   };
 

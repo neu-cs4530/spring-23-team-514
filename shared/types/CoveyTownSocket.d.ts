@@ -79,6 +79,7 @@ export interface PosterSessionArea {
 
 export interface ServerToClientEvents {
   playerMoved: (movedPlayer: Player) => void;
+  playerTeleport: (movedPlayer: Player) => void;
   playerDisconnect: (disconnectedPlayer: Player) => void;
   playerJoined: (newPlayer: Player) => void;
   initialize: (initialData: TownJoinResponse) => void;
