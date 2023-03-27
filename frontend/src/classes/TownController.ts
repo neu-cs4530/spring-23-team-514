@@ -225,6 +225,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this.registerSocketListeners();
   }
 
+  public get socket() {
+    return this._socket;
+  }
+
   public get sessionToken() {
     return this._sessionToken || '';
   }
@@ -426,18 +430,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     /**
      * When a player teleports, update local state and emit an event to the controller's event listeners
      */
-    this._socket.on('playerTeleport', movedPlayer => {
+    this._socket.on('playerTeleported', movedPlayer => {
       const playerToUpdate = this.players.find(eachPlayer => eachPlayer.id === movedPlayer.id);
       if (playerToUpdate) {
-        if (playerToUpdate === this._ourPlayer) {
-          /*
-           * If we are told that WE moved, we shouldn't update our x,y because it's probably lagging behind
-           * real time. However: we SHOULD update our interactable ID, because its value is managed by the server
-           */
-          playerToUpdate.location.interactableID = movedPlayer.location.interactableID;
-        } else {
-          playerToUpdate.teleport(movedPlayer.location);
-        }
+        playerToUpdate.teleport(movedPlayer.location);
         this.emit('playerTeleported', playerToUpdate);
       } else {
         //TODO: It should not be possible to receive a playerTeleport event for a player that is not already in the players array, right?
