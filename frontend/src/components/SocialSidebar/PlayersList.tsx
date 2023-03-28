@@ -13,26 +13,21 @@ import PlayerName from './PlayerName';
  */
 export default function PlayersInTownList(): JSX.Element {
   const players = usePlayers();
-  const { friendlyName, townID, userName, userID, socket, ourPlayer } = useTownController();
+  const townController = useTownController();
   const sorted = players.concat([]);
   sorted.sort((p1, p2) =>
     p1.userName.localeCompare(p2.userName, undefined, { numeric: true, sensitivity: 'base' }),
   );
 
   const handleTeleport = (player: PlayerController) => {
-    if (userID !== player.id) {
-      console.log('teleporting from' + userName + ' to ' + player.userName);
-      const newLocation = player.location;
-      socket.emit('playerTeleport', newLocation);
-      ourPlayer.teleport(newLocation);
-    }
+    townController.emitTeleport(player);
   };
 
   return (
     <Box>
-      <Tooltip label={`Town ID: ${townID}`}>
+      <Tooltip label={`Town ID: ${townController.townID}`}>
         <Heading as='h2' fontSize='l'>
-          Current town: {friendlyName}
+          Current town: {townController.friendlyName}
         </Heading>
       </Tooltip>
       <OrderedList>
