@@ -32,8 +32,13 @@ export function fetchToken(
 }
 
 export function verifyPasscode(passcode: string) {
-  return fetchToken('temp-name', 'temp-room', passcode, false /* create_room */, false /* create_conversation */).then(
-    async res => {
+  return fetchToken(
+    'temp-name',
+    'temp-room',
+    passcode,
+    false /* create_room */,
+    false /* create_conversation */,
+  ).then(async res => {
       const jsonResponse = await res.json();
       if (res.status === 401) {
         return { isValid: false, error: jsonResponse.error?.message };

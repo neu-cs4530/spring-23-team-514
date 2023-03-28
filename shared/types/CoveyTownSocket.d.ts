@@ -79,6 +79,7 @@ export interface PosterSessionArea {
 
 export interface ServerToClientEvents {
   playerMoved: (movedPlayer: Player) => void;
+  playerTeleported: (movedPlayer: Player) => void;
   playerDisconnect: (disconnectedPlayer: Player) => void;
   playerJoined: (newPlayer: Player) => void;
   initialize: (initialData: TownJoinResponse) => void;
@@ -91,5 +92,6 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   chatMessage: (message: ChatMessage) => void;
   playerMovement: (movementData: PlayerLocation) => void;
+  playerTeleport: (movementData: PlayerLocation) => void;
   interactableUpdate: (update: Interactable) => void;
 }

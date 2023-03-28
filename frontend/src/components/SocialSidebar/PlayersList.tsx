@@ -1,5 +1,6 @@
-import { Box, Heading, ListItem, OrderedList, Tooltip } from '@chakra-ui/react';
+import { Box, Button, Heading, ListItem, OrderedList, Tooltip } from '@chakra-ui/react';
 import React from 'react';
+import PlayerController from '../../classes/PlayerController';
 import { usePlayers } from '../../classes/TownController';
 import useTownController from '../../hooks/useTownController';
 import PlayerName from './PlayerName';
@@ -12,23 +13,32 @@ import PlayerName from './PlayerName';
  */
 export default function PlayersInTownList(): JSX.Element {
   const players = usePlayers();
-  const { friendlyName, townID } = useTownController();
+  const townController = useTownController();
   const sorted = players.concat([]);
   sorted.sort((p1, p2) =>
     p1.userName.localeCompare(p2.userName, undefined, { numeric: true, sensitivity: 'base' }),
   );
 
+  const handleTeleport = (player: PlayerController) => {
+    townController.emitMovement(player.location);
+  };
+
   return (
     <Box>
-      <Tooltip label={`Town ID: ${townID}`}>
+      <Tooltip label={`Town ID: ${townController.townID}`}>
         <Heading as='h2' fontSize='l'>
-          Current town: {friendlyName}
+          Current town: {townController.friendlyName}
         </Heading>
       </Tooltip>
       <OrderedList>
         {sorted.map(player => (
           <ListItem key={player.id}>
-            <PlayerName player={player} />
+            <Button
+              onClick={() => {
+                handleTeleport(player);
+              }}>
+              <PlayerName player={player} />
+            </Button>
           </ListItem>
         ))}
       </OrderedList>

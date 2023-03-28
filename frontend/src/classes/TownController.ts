@@ -62,6 +62,11 @@ export type TownEvents = {
    */
   playerMoved: (movedPlayer: PlayerController) => void;
   /**
+   * An event that indicates that a player has teleported. This event is dispatched after updating the player's location -
+   * the new location can be found on the PlayerController.
+   */
+  playerTeleported: (movedPlayer: PlayerController) => void;
+  /**
    * An event that indicates that the set of conversation areas has changed. This event is dispatched
    * when a conversation area is created, or when the set of active conversations has changed. This event is dispatched
    * after updating the town controller's record of conversation areas.
@@ -218,6 +223,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this._socket = io(url, { auth: { userName, townID } });
     this._townsService = new TownsServiceClient({ BASE: url }).towns;
     this.registerSocketListeners();
+  }
+
+  public get socket() {
+    return this._socket;
   }
 
   public get sessionToken() {
@@ -419,6 +428,30 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     });
 
     /**
+     * When a player teleports, update local state and emit an event to the controller's event listeners
+     */
+    this._socket.on('playerTeleported', movedPlayer => {
+      const playerToUpdate = this.players.find(eachPlayer => eachPlayer.id === movedPlayer.id);
+      if (playerToUpdate) {
+        if (playerToUpdate === this._ourPlayer) {
+          /*
+           * If we are told that WE moved, we shouldn't update our x,y because it's probably lagging behind
+           * real time. However: we SHOULD update our interactable ID, because its value is managed by the server
+           */
+          playerToUpdate.location.interactableID = movedPlayer.location.interactableID;
+        } else {
+          playerToUpdate.teleport(movedPlayer.location);
+        }
+        this.emit('playerTeleported', playerToUpdate);
+      } else {
+        //TODO: It should not be possible to receive a playerTeleport event for a player that is not already in the players array, right?
+        const newPlayer = PlayerController.fromPlayerModel(movedPlayer);
+        this._players = this.players.concat(newPlayer);
+        this.emit('playerTeleported', newPlayer);
+      }
+    });
+
+    /**
      * When an interactable's state changes, push that update into the relevant controller, which is assumed
      * to be either a Viewing Area, a Poster Session Area, or a Conversation Area, and which is assumed to already
      * be represented by a ViewingAreaController, PosterSessionAreaController or ConversationAreaController that this TownController has.
@@ -470,6 +503,24 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     assert(ourPlayer);
     ourPlayer.location = newLocation;
     this.emit('playerMoved', ourPlayer);
+  }
+
+  /**
+   * Emit a movement event for the current player, updating the state locally and
+   * also notifying the townService that our player moved.
+   *
+   * Note: it is the responsibility of the townService to set the 'interactableID' parameter
+   * of the player's location, and any interactableID set here may be overwritten by the townService
+   *
+   * @param player: the player that this player is teleporting to
+   */
+  public emitTeleport(player: PlayerController) {
+    const newLocation = player.location;
+    this._socket.emit('playerTeleport', newLocation);
+    const ourPlayer = this._ourPlayer;
+    assert(ourPlayer);
+    ourPlayer.teleport(newLocation);
+    this.emit('playerTeleported', ourPlayer);
   }
 
   /**
@@ -920,10 +971,12 @@ export function usePlayersInVideoCall(): PlayerController[] {
       }
     };
     townController.addListener('playerMoved', updatePlayersInCall);
+    townController.addListener('playerTeleported', updatePlayersInCall);
     townController.addListener('playersChanged', updatePlayersInCall);
     updatePlayersInCall();
     return () => {
       townController.removeListener('playerMoved', updatePlayersInCall);
+      townController.removeListener('playerTeleported', updatePlayersInCall);
       townController.removeListener('playersChanged', updatePlayersInCall);
     };
   }, [townController, setPlayersInCall]);

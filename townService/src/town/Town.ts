@@ -20,6 +20,7 @@ import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 import PosterSessionArea from './PosterSessionArea';
+// import { Server } from 'http';
 
 /**
  * The Town class implements the logic for each town: managing the various events that
@@ -146,6 +147,12 @@ export default class Town {
       this._updatePlayerLocation(newPlayer, movementData);
     });
 
+    // Register an event listener for the client socket: if the client updates their
+    // location using teleport, inform the CoveyTownController
+    socket.on('playerTeleport', (movementData: PlayerLocation) => {
+      this._updateAfterTeleport(newPlayer, movementData);
+    });
+
     // Set up a listener to process updates to interactables.
     // Currently only knows how to process updates for ViewingAreas and PosterSessionAreas, and
     // ignores any other updates for any other kind of interactable.
@@ -227,6 +234,42 @@ export default class Town {
     player.location = location;
 
     this._broadcastEmitter.emit('playerMoved', player.toPlayerModel());
+  }
+
+  /**
+   * Updates the location of a player within the town
+   *
+   * If the player has changed conversation areas, this method also updates the
+   * corresponding ConversationArea objects tracked by the town controller, and dispatches
+   * any onConversationUpdated events as appropriate
+   *
+   * @param player Player to update location for
+   * @param location New location for this player
+   */
+  private _updateAfterTeleport(player: Player, location: PlayerLocation): void {
+    const prevInteractable = this._interactables.find(
+      conv => conv.id === player.location.interactableID,
+    );
+
+    if (!prevInteractable?.contains(location)) {
+      if (prevInteractable) {
+        // Remove from old area
+        prevInteractable.remove(player);
+      }
+      const newInteractable = this._interactables.find(
+        eachArea => eachArea.isActive && eachArea.contains(location),
+      );
+      if (newInteractable) {
+        newInteractable.add(player);
+      }
+      location.interactableID = newInteractable?.id;
+    } else {
+      location.interactableID = prevInteractable.id;
+    }
+
+    player.location = location;
+
+    this._broadcastEmitter.emit('playerTeleported', player.toPlayerModel());
   }
 
   /**
