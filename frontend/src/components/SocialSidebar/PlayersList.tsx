@@ -20,7 +20,7 @@ export default function PlayersInTownList(): JSX.Element {
   );
 
   const handleTeleport = (player: PlayerController) => {
-    townController.emitTeleport(player);
+    townController.emitMovement(player.location);
   };
 
   return (

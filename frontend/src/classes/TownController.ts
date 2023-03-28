@@ -440,7 +440,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
            */
           playerToUpdate.location.interactableID = movedPlayer.location.interactableID;
         } else {
-          playerToUpdate.location = movedPlayer.location;
+          playerToUpdate.teleport(movedPlayer.location);
         }
         this.emit('playerTeleported', playerToUpdate);
       } else {

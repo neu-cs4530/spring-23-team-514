@@ -52,6 +52,7 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
 
   public teleport(newLocation: PlayerLocation) {
     // change player location without walking animations
+    console.log('new location:' + newLocation.x + ' ' + newLocation.y);
     this._location = newLocation;
     this._updateGameComponentLocation(true);
     this.emit('movement', newLocation);

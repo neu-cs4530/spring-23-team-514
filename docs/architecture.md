@@ -89,6 +89,7 @@ While a user is in a town, communication between the frontend and the backend oc
 ```ts
 export interface ServerToClientEvents {
   playerMoved: (movedPlayer: Player) => void;
+  playerTeleported: (movedPlayer: Player) => void;
   playerDisconnect: (disconnectedPlayer: Player) => void;
   playerJoined: (newPlayer: Player) => void;
   initialize: (initialData: TownJoinResponse) => void;
@@ -102,7 +103,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   chatMessage: (message: ChatMessage) => void;
   playerMovement: (movementData: PlayerLocation) => void;
-  playerTeleported: (teleportData: PlayerLocation) => void;
+  playerTeleport: (teleportData: PlayerLocation) => void;
 }
 ```
 
