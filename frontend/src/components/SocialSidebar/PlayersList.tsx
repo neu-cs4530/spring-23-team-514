@@ -59,6 +59,7 @@ export default function PlayersInTownList(): JSX.Element {
                           onClick={() => {
                             console.log('accept teleport confirm');
                             handleTeleport(player);
+                            onClose();
                           }}>
                           confirm
                         </Button>
