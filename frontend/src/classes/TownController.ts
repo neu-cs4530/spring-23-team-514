@@ -515,12 +515,19 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * @param player: the player that this player is teleporting to
    */
   public emitTeleport(player: PlayerController) {
-    const newLocation = player.location;
-    this._socket.emit('playerTeleport', newLocation);
-    const ourPlayer = this._ourPlayer;
-    assert(ourPlayer);
-    ourPlayer.teleport(newLocation);
-    this.emit('playerTeleported', ourPlayer);
+    // do not emit teleport to self.
+    if (player !== this.ourPlayer) {
+      const newLocation = player.location;
+      console.log('expected location: ' + player.location.x + ' ' + player.location.y);
+      newLocation.moving = false;
+      newLocation.interactableID = this._viewingAreas[1].id;
+      this._socket.emit('playerTeleport', newLocation);
+      const ourPlayer = this._ourPlayer;
+      assert(ourPlayer);
+      ourPlayer.teleport(newLocation);
+      assert(ourPlayer.location == player.location);
+      this.emit('playerTeleported', ourPlayer);
+    }
   }
 
   /**
@@ -852,7 +859,6 @@ export function usePlayers(): PlayerController[] {
   const townController = useTownController();
   const [players, setPlayers] = useState<PlayerController[]>(townController.players);
   useEffect(() => {
-    // no listener for 'playerMoved'
     townController.addListener('playersChanged', setPlayers);
     return () => {
       townController.removeListener('playersChanged', setPlayers);
