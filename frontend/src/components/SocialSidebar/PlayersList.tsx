@@ -1,4 +1,14 @@
-import { Box, Button, Heading, ListItem, OrderedList, Tooltip } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Heading,
+  HStack,
+  ListItem,
+  OrderedList,
+  Tooltip,
+  useToast,
+  ToastId,
+} from '@chakra-ui/react';
 import React from 'react';
 import PlayerController from '../../classes/PlayerController';
 import { usePlayers } from '../../classes/TownController';
@@ -15,6 +25,7 @@ export default function PlayersInTownList(): JSX.Element {
   const players = usePlayers();
   const townController = useTownController();
   const sorted = players.concat([]);
+  const toast = useToast();
   sorted.sort((p1, p2) =>
     p1.userName.localeCompare(p2.userName, undefined, { numeric: true, sensitivity: 'base' }),
   );
@@ -34,9 +45,32 @@ export default function PlayersInTownList(): JSX.Element {
         {sorted.map(player => (
           <ListItem key={player.id}>
             <Button
-              onClick={() => {
-                handleTeleport(player);
-              }}>
+              onClick={() =>
+                toast({
+                  position: 'bottom-left',
+                  duration: 10000,
+                  render: ({ onClose }) => (
+                    <Box color='white' p={3} bg='blue.500'>
+                      Would you like to teleport to {player.userName}?
+                      <HStack>
+                        <Button
+                          size='xs'
+                          color='green'
+                          onClick={() => {
+                            console.log('accept teleport confirm');
+                            handleTeleport(player);
+                            onClose();
+                          }}>
+                          confirm
+                        </Button>
+                        <Button size='xs' color='red' onClick={onClose}>
+                          deny
+                        </Button>
+                      </HStack>
+                    </Box>
+                  ),
+                })
+              }>
               <PlayerName player={player} />
             </Button>
           </ListItem>
