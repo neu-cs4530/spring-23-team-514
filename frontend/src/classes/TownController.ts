@@ -67,6 +67,11 @@ export type TownEvents = {
    */
   playerTeleported: (movedPlayer: PlayerController) => void;
   /**
+   * An event that indicates that a player has requested to teleport. This event is dispatched when a player has requested
+   * to teleport to another player.
+   */
+  teleportRequested: (fromPlayer: PlayerController, toPlayer: PlayerController) => void;
+  /**
    * An event that indicates that the set of conversation areas has changed. This event is dispatched
    * when a conversation area is created, or when the set of active conversations has changed. This event is dispatched
    * after updating the town controller's record of conversation areas.
@@ -452,6 +457,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     });
 
     /**
+     * When a player requests to teleport another player, log that we received a request to teleport to our player
+     */
+    this._socket.on('teleportRequested', (fromPlayer, toPlayer) => {
+      if (this._ourPlayer === toPlayer) {
+        console.log('Received teleport request from ' + fromPlayer);
+      }
+    });
+
+    /**
      * When an interactable's state changes, push that update into the relevant controller, which is assumed
      * to be either a Viewing Area, a Poster Session Area, or a Conversation Area, and which is assumed to already
      * be represented by a ViewingAreaController, PosterSessionAreaController or ConversationAreaController that this TownController has.
@@ -506,8 +520,8 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   }
 
   /**
-   * Emit a movement event for the current player, updating the state locally and
-   * also notifying the townService that our player moved.
+   * Emit a teleport event for the current player, updating the state locally and
+   * also notifying the townService that our player moved via teleportation.
    *
    * Note: it is the responsibility of the townService to set the 'interactableID' parameter
    * of the player's location, and any interactableID set here may be overwritten by the townService
@@ -527,6 +541,21 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       ourPlayer.teleport(newLocation);
       assert(ourPlayer.location == player.location);
       this.emit('playerTeleported', ourPlayer);
+    }
+  }
+
+  /**
+   * Emit a teleport requested event for the current player that is requesting
+   * to teleport to another player.
+   *
+   * @param player: the player that this player is teleport to
+   */
+  public emitTeleportRequest(player: PlayerController) {
+    // do not emit teleport request to self
+    if (player !== this.ourPlayer) {
+      const ourPlayer = this._ourPlayer;
+      assert(ourPlayer);
+      this.emit('teleportRequested', this.ourPlayer, player);
     }
   }
 
