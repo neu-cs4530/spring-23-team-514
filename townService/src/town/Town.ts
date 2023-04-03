@@ -153,6 +153,22 @@ export default class Town {
       this._updateAfterTeleport(newPlayer, movementData);
     });
 
+    // Register an event listener for the client socket: if the client recieves a teleport
+    // request, inform the CoveyTownController so the user can accept/decline
+    socket.on('teleportRequested', (fromPlayer, toPlayer) => {
+      if (newPlayer === toPlayer) {
+        this._broadcastEmitter.emit('teleportRequested', fromPlayer, toPlayer);
+      }
+    });
+
+    // Register an event listern for the client socket: if the client recieves an accept for
+    // their teleport request, then move them to the player they requested
+    socket.on('teleportAccepted', (fromPlayer, toPlayer) => {
+      if (newPlayer === fromPlayer) {
+        this._updateAfterTeleport(newPlayer, toPlayer.location);
+      }
+    });
+
     // Set up a listener to process updates to interactables.
     // Currently only knows how to process updates for ViewingAreas and PosterSessionAreas, and
     // ignores any other updates for any other kind of interactable.
