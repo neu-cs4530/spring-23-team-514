@@ -7,6 +7,7 @@ import {
   OrderedList,
   Tooltip,
   useToast,
+  ToastId,
 } from '@chakra-ui/react';
 import React from 'react';
 import PlayerController from '../../classes/PlayerController';
@@ -48,9 +49,9 @@ export default function PlayersInTownList(): JSX.Element {
                 toast({
                   position: 'bottom-left',
                   duration: 10000,
-                  render: () => (
+                  render: ({ onClose }) => (
                     <Box color='white' p={3} bg='blue.500'>
-                      would you like to teleport {player.userName}?
+                      Would you like to teleport to {player.userName}?
                       <HStack>
                         <Button
                           size='xs'
@@ -61,13 +62,7 @@ export default function PlayersInTownList(): JSX.Element {
                           }}>
                           confirm
                         </Button>
-                        <Button
-                          size='xs'
-                          color='red'
-                          onClick={() => {
-                            // close the toast, nothing happens
-                            console.log('deny teleport confirm');
-                          }}>
+                        <Button size='xs' color='red' onClick={onClose}>
                           deny
                         </Button>
                       </HStack>
