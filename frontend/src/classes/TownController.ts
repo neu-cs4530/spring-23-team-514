@@ -461,7 +461,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
      */
     this._socket.on('teleportRequested', (fromPlayer, toPlayer) => {
       if (this._ourPlayer === toPlayer) {
-        console.log('Received teleport request from ' + fromPlayer);
+        console.log('Received teleport request from ' + fromPlayer.userName);
       }
     });
 
