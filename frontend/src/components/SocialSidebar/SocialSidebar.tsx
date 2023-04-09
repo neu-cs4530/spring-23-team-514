@@ -1,4 +1,4 @@
-import { Heading, StackDivider, VStack } from '@chakra-ui/react';
+import { Button, Heading, StackDivider, VStack } from '@chakra-ui/react';
 import React from 'react';
 import ConversationAreasList from './ConversationAreasList';
 import PlayersList from './PlayersList';
@@ -18,6 +18,7 @@ export default function SocialSidebar(): JSX.Element {
       <Heading fontSize='xl' as='h1'>
         Players In This Town
       </Heading>
+      <Button color='blue'> tp back </Button>
       <PlayersList />
       <ConversationAreasList />
     </VStack>
