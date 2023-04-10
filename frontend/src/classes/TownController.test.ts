@@ -155,6 +155,36 @@ describe('TownController', () => {
       //Uses the correct (new) location when emitting that update locally
       expect(expectedPlayerUpdate.location).toEqual(newLocation);
     });
+    it("Emits the local player's teleport update to the socket and to local CoveyTownEvents listeners", () => {
+      const teleportedLocation: PlayerLocation = {
+        x: 100,
+        y: 100,
+        rotation: 'front',
+        moving: false,
+      };
+      const teleportedPlayerModel: PlayerModel = {
+        id: nanoid(),
+        userName: nanoid(),
+        location: teleportedLocation,
+      };
+      const teleportedPlayer = PlayerController.fromPlayerModel(teleportedPlayerModel);
+      const expectedPlayerUpdate = testController.ourPlayer;
+      expectedPlayerUpdate.location = teleportedLocation;
+      const teleportedPlayerListener = jest.fn();
+
+      testController.addListener('playerTeleported', teleportedPlayerListener);
+
+      testController.emitTeleport(teleportedPlayer);
+
+      //Emits the event to the socket
+      expect(mockSocket.emit).toBeCalledWith('playerTeleport', teleportedLocation);
+
+      //Emits the playerTeleport event to locally subscribed listeners, indicating that the player teleported
+      expect(teleportedPlayerListener).toBeCalledWith(expectedPlayerUpdate);
+
+      //Uses the correct (new) location when emitting that update locally
+      expect(expectedPlayerUpdate.location).toEqual(teleportedLocation);
+    });
     it('Emits locally written chat messages to the socket, and dispatches no other events', () => {
       const testMessage: ChatMessage = {
         author: nanoid(),
@@ -511,6 +541,21 @@ describe('TownController', () => {
         'playerMoved',
         testPlayer,
         'playerMoved',
+        PlayerController.fromPlayerModel(testPlayer),
+      );
+    });
+    it('Emits playerTeleported events when players teleport', async () => {
+      testPlayer.location = {
+        moving: false,
+        rotation: 'front',
+        x: 1,
+        y: 0,
+        interactableID: nanoid(),
+      };
+      emitEventAndExpectListenerFiring(
+        'playerTeleported',
+        testPlayer,
+        'playerTeleported',
         PlayerController.fromPlayerModel(testPlayer),
       );
     });

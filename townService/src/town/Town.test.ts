@@ -648,7 +648,7 @@ describe('Town', () => {
         moving: false,
       };
       beforeEach(() => {
-        playerTestData.moveTo(
+        playerTestData.teleportTo(
           teleportedLocation.x,
           teleportedLocation.y,
           teleportedLocation.rotation,
@@ -656,8 +656,8 @@ describe('Town', () => {
         );
       });
 
-      it('Emits a playerMoved event', () => {
-        const lastEmittedMovement = getLastEmittedEvent(townEmitter, 'playerMoved');
+      it('Emits a playerTeleport event', () => {
+        const lastEmittedMovement = getLastEmittedEvent(townEmitter, 'playerTeleported');
         expect(lastEmittedMovement.id).toEqual(playerTestData.player?.id);
         expect(lastEmittedMovement.location).toEqual(teleportedLocation);
       });
