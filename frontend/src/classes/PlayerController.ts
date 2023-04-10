@@ -15,6 +15,8 @@ export type PlayerGameObjects = {
 export default class PlayerController extends (EventEmitter as new () => TypedEmitter<PlayerEvents>) {
   private _location: PlayerLocation;
 
+  private _preTeleportLocation: PlayerLocation;
+
   private readonly _id: string;
 
   private readonly _userName: string;
@@ -26,6 +28,7 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
     this._id = id;
     this._userName = userName;
     this._location = location;
+    this._preTeleportLocation = location;
   }
 
   set location(newLocation: PlayerLocation) {
@@ -36,6 +39,14 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
 
   get location(): PlayerLocation {
     return this._location;
+  }
+
+  set preTeleportLocation(newLocation: PlayerLocation) {
+    this._preTeleportLocation = newLocation;
+  }
+
+  get preTeleportLocation(): PlayerLocation {
+    return this._preTeleportLocation;
   }
 
   get userName(): string {
@@ -52,9 +63,17 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
 
   public teleport(newLocation: PlayerLocation) {
     // change player location without walking animations
+    this._preTeleportLocation = this._location;
     this._location = newLocation;
     this._updateGameComponentLocation(true);
     this.emit('movement', newLocation);
+  }
+
+  public teleportBack() {
+    // change player location without walking animations
+    this._location = this._preTeleportLocation;
+    this._updateGameComponentLocation(true);
+    this.emit('movement', this._location);
   }
 
   private _updateGameComponentLocation(teleport: boolean) {
