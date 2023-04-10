@@ -544,6 +544,27 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     }
   }
 
+  public emitTeleportBack() {
+    console.log('teleport back emitter called');
+    if (this.ourPlayer.preTeleportLocation) {
+      this.ourPlayer.preTeleportLocation.moving = false;
+      console.log(
+        'previous location:' +
+          this.ourPlayer.preTeleportLocation.x +
+          ' ' +
+          this.ourPlayer.preTeleportLocation.y,
+      );
+      console.log(
+        'current location: ' + this.ourPlayer.location.x + ' ' + this.ourPlayer.location.y,
+      );
+      this._socket.emit('playerTeleport', this.ourPlayer.preTeleportLocation);
+      const ourPlayer = this._ourPlayer;
+      assert(ourPlayer);
+      ourPlayer.teleport(this.ourPlayer.preTeleportLocation);
+      this.emit('playerTeleported', ourPlayer);
+    }
+  }
+
   /**
    * Emit a teleport requested event for the current player that is requesting
    * to teleport to another player.
