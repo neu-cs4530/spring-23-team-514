@@ -544,6 +544,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     }
   }
 
+  public emitTeleportBack() {
+    this.ourPlayer.location.moving = false;
+    this._socket.emit('playerTeleport', this.ourPlayer.preTeleportLocation);
+    const ourPlayer = this._ourPlayer;
+    assert(ourPlayer);
+    ourPlayer.teleport(this.ourPlayer.preTeleportLocation);
+    this.emit('playerTeleported', ourPlayer);
+  }
+
   /**
    * Emit a teleport requested event for the current player that is requesting
    * to teleport to another player.

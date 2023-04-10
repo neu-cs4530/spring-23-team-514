@@ -69,6 +69,7 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
     this.emit('movement', newLocation);
   }
 
+  // DO NOT NEED
   public teleportBack() {
     // change player location without walking animations
     this._location = this._preTeleportLocation;

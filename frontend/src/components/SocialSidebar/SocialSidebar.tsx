@@ -2,8 +2,14 @@ import { Button, Heading, StackDivider, VStack } from '@chakra-ui/react';
 import React from 'react';
 import ConversationAreasList from './ConversationAreasList';
 import PlayersList from './PlayersList';
+import useTownController from '../../hooks/useTownController';
 
 export default function SocialSidebar(): JSX.Element {
+  const townController = useTownController();
+  const handleTeleportBack = () => {
+    townController.emitTeleportBack();
+  };
+
   return (
     <VStack
       align='left'
@@ -18,7 +24,12 @@ export default function SocialSidebar(): JSX.Element {
       <Heading fontSize='xl' as='h1'>
         Players In This Town
       </Heading>
-      <Button color='blue'> tp back </Button>
+      <Button color='blue' onClick={() => {
+        console.log('teleport back');
+        handleTeleportBack();
+      }}>
+        tp back
+      </Button>
       <PlayersList />
       <ConversationAreasList />
     </VStack>
