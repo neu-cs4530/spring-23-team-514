@@ -155,7 +155,7 @@ export default class Town {
 
     // Register an event listener for the client socket: if the client recieves a teleport
     // request, inform the CoveyTownController so the user can accept/decline
-    socket.on('teleportRequested', (fromPlayer, toPlayer) => {
+    socket.on('teleportRequest', (fromPlayer, toPlayer) => {
       if (newPlayer === toPlayer) {
         this._broadcastEmitter.emit('teleportRequested', fromPlayer, toPlayer);
       }
@@ -163,7 +163,7 @@ export default class Town {
 
     // Register an event listern for the client socket: if the client recieves an accept for
     // their teleport request, then move them to the player they requested
-    socket.on('teleportAccepted', (fromPlayer, toPlayer) => {
+    socket.on('teleportAccept', (fromPlayer, toPlayer) => {
       if (newPlayer === fromPlayer) {
         this._updateAfterTeleport(newPlayer, toPlayer.location);
       }
