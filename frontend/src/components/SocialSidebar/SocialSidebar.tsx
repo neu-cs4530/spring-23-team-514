@@ -6,6 +6,7 @@ import useTownController from '../../hooks/useTownController';
 
 export default function SocialSidebar(): JSX.Element {
   const townController = useTownController();
+
   const handleTeleportBack = () => {
     townController.emitTeleportBack();
   };
@@ -24,11 +25,13 @@ export default function SocialSidebar(): JSX.Element {
       <Heading fontSize='xl' as='h1'>
         Players In This Town
       </Heading>
-      <Button color='blue' onClick={() => {
-        console.log('teleport back');
-        handleTeleportBack();
-      }}>
-        tp back
+      <Button
+        color='blue'
+        onClick={() => {
+          console.log('teleport back');
+          handleTeleportBack();
+        }}>
+        Teleport Back
       </Button>
       <PlayersList />
       <ConversationAreasList />
