@@ -17,6 +17,7 @@ import {
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  TeleportRequest,
 } from '../types/CoveyTownSocket';
 import { isConversationArea, isViewingArea, isPosterSessionArea } from '../types/TypeUtils';
 import ConversationAreaController from './ConversationAreaController';
@@ -70,7 +71,7 @@ export type TownEvents = {
    * An event that indicates that a player has requested to teleport. This event is dispatched when a player has requested
    * to teleport to another player.
    */
-  teleportRequested: (fromPlayer: PlayerController, toPlayer: PlayerController) => void;
+  teleportRequested: (newRequest: TeleportRequest) => void;
   /**
    * An event that indicates that the set of conversation areas has changed. This event is dispatched
    * when a conversation area is created, or when the set of active conversations has changed. This event is dispatched
@@ -200,6 +201,12 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    * and will also release any key bindings, allowing all keys to be used for text entry or other purposes.
    */
   private _paused = false;
+
+  /**
+   * The most recent teleport request to this player
+   * made by a player in the server. Contains the request sender and receiver, which should be our player.
+   */
+  private _teleportRequest?: TeleportRequest | undefined;
 
   /**
    * An event emitter that broadcasts interactable-specific events
@@ -342,6 +349,10 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     this.emit('posterSessionAreasChanged', newPosterSessionAreas);
   }
 
+  public get teleportRequest() {
+    return this._teleportRequest;
+  }
+
   /**
    * Begin interacting with an interactable object. Emits an event to all listeners.
    * @param interactedObj
@@ -459,9 +470,22 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     /**
      * When a player requests to teleport another player, log that we received a request to teleport to our player
      */
-    this._socket.on('teleportRequested', (fromPlayer, toPlayer) => {
-      if (this._ourPlayer === toPlayer) {
-        console.log('Received teleport request from ' + fromPlayer.userName);
+    this._socket.on('teleportRequested', newRequest => {
+      const requestAsPlayerController = {
+        from: PlayerController.fromPlayerModel(newRequest.from),
+        to: PlayerController.fromPlayerModel(newRequest.to),
+      };
+      if (this._ourPlayer && this._ourPlayer.id === requestAsPlayerController.to.id) {
+        console.log('Received teleport request from ' + requestAsPlayerController.from.userName);
+        this._teleportRequest = requestAsPlayerController;
+        this.emit('teleportRequested', requestAsPlayerController);
+      } else {
+        console.log(
+          'received garbage teleport request. Our player is ' +
+            this.ourPlayer.userName +
+            ' and target player is ' +
+            requestAsPlayerController.to.userName,
+        );
       }
     });
 
@@ -576,7 +600,11 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     if (player !== this.ourPlayer) {
       const ourPlayer = this._ourPlayer;
       assert(ourPlayer);
-      this.emit('teleportRequested', this.ourPlayer, player);
+      const newRequest = { from: ourPlayer.toPlayerModel(), to: player.toPlayerModel() };
+      console.log('in emit teleport request');
+      console.log('our player:' + newRequest.from.userName);
+      console.log('target player:' + newRequest.to.userName);
+      this._socket.emit('teleportRequest', newRequest);
     }
   }
 
@@ -915,6 +943,29 @@ export function usePlayers(): PlayerController[] {
     };
   }, [townController, setPlayers]);
   return players;
+}
+
+/**
+ * A react hook to return the most recent teleport request made to our player.
+ *
+ * This hook will cause components that use it to re-render when the teleport request changes.
+ *
+ * This hook relies on the TownControllerContext.
+ *
+ * @returns a TeleportRequest object, containing the sender and receiver (PlayerControllers) of the request.
+ */
+export function useTeleportRequest(): TeleportRequest | undefined {
+  const townController = useTownController();
+  const [teleportRequest, setTeleportRequest] = useState<TeleportRequest | undefined>(
+    townController.teleportRequest,
+  );
+  useEffect(() => {
+    townController.addListener('teleportRequested', setTeleportRequest);
+    return () => {
+      townController.removeListener('teleportRequested', setTeleportRequest);
+    };
+  }, [townController, setTeleportRequest]);
+  return teleportRequest;
 }
 
 /**

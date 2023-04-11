@@ -33,6 +33,8 @@ export interface Player {
 
 export type XY = { x: number, y: number };
 
+export type TeleportRequest = { from: Player, to: Player };
+
 export interface PlayerLocation {
   /* The CENTER x coordinate of this player's location */
   x: number;
@@ -83,7 +85,7 @@ export interface ServerToClientEvents {
   playerDisconnect: (disconnectedPlayer: Player) => void;
   playerJoined: (newPlayer: Player) => void;
   initialize: (initialData: TownJoinResponse) => void;
-  teleportRequested: (fromPlayer: Player, toPlayer: Player) => void;
+  teleportRequested: (newRequest: TeleportRequest) => void;
   townSettingsUpdated: (update: TownSettingsUpdate) => void;
   teleportRequested: (fromPlayer: Player, toPlayer: Player) => void;
   townClosing: () => void;
@@ -95,7 +97,7 @@ export interface ClientToServerEvents {
   chatMessage: (message: ChatMessage) => void;
   playerMovement: (movementData: PlayerLocation) => void;
   playerTeleport: (movementData: PlayerLocation) => void;
-  teleportRequest: (fromPlayer: Player, toPlayer: Player) => void;
+  teleportRequest: (newRequest: TeleportRequest) => void;
   teleportAccept: (fromPlayer: Player, toPlayer: Player) => void;
   interactableUpdate: (update: Interactable) => void;
 }
