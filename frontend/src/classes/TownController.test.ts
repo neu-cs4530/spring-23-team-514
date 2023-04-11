@@ -545,6 +545,8 @@ describe('TownController', () => {
       );
     });
     it('Emits playerTeleported events when players teleport', async () => {
+      const prevInteractableID = testPlayer.location.interactableID;
+      const prevRotation = testPlayer.location.rotation;
       testPlayer.location = {
         moving: false,
         rotation: 'front',
@@ -552,11 +554,19 @@ describe('TownController', () => {
         y: 0,
         interactableID: nanoid(),
       };
+      const testPlayerController: PlayerController = PlayerController.fromPlayerModel(testPlayer);
+      testPlayerController.preTeleportLocation = {
+        moving: false,
+        rotation: prevRotation,
+        x: 0,
+        y: 1,
+        interactableID: prevInteractableID,
+      };
       emitEventAndExpectListenerFiring(
         'playerTeleported',
         testPlayer,
         'playerTeleported',
-        PlayerController.fromPlayerModel(testPlayer),
+        testPlayerController,
       );
     });
   });
