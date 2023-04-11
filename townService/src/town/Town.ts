@@ -15,6 +15,7 @@ import {
   SocketData,
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  TeleportRequest,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
@@ -155,10 +156,13 @@ export default class Town {
 
     // Register an event listener for the client socket: if the client recieves a teleport
     // request, inform the CoveyTownController so the user can accept/decline
-    socket.on('teleportRequest', (fromPlayer, toPlayer) => {
-      if (newPlayer === toPlayer) {
-        this._broadcastEmitter.emit('teleportRequested', fromPlayer, toPlayer);
-      }
+    socket.on('teleportRequest', (newRequest: TeleportRequest) => {
+      console.log('received request on backend.');
+      console.log(`from ${newRequest.from.userName} to ${newRequest.to.userName}`);
+      this._broadcastEmitter.emit('teleportRequested', {
+        from: newRequest.from,
+        to: newRequest.to,
+      });
     });
 
     // Register an event listern for the client socket: if the client recieves an accept for
