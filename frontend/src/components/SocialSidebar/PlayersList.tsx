@@ -32,10 +32,6 @@ export default function PlayersInTownList(): JSX.Element {
     p1.userName.localeCompare(p2.userName, undefined, { numeric: true, sensitivity: 'base' }),
   );
 
-  const handleTeleport = (player: PlayerController) => {
-    townController.emitTeleport(player);
-  };
-
   const handleTeleportRequest = (player: PlayerController) => {
     townController.emitTeleportRequest(player);
   };
