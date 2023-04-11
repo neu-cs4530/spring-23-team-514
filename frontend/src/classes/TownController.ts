@@ -507,9 +507,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       } else {
         console.log(
           'received garbage teleport request. Our player is ' +
-          this.ourPlayer.userName +
-          ' and target player is ' +
-          requestAsPlayerController.to.userName,
+            this.ourPlayer.userName +
+            ' and target player is ' +
+            requestAsPlayerController.to.userName,
         );
       }
     });
@@ -606,9 +606,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       this.ourPlayer.preTeleportLocation.moving = false;
       console.log(
         'previous location:' +
-        this.ourPlayer.preTeleportLocation.x +
-        ' ' +
-        this.ourPlayer.preTeleportLocation.y,
+          this.ourPlayer.preTeleportLocation.x +
+          ' ' +
+          this.ourPlayer.preTeleportLocation.y,
       );
       console.log(
         'current location: ' + this.ourPlayer.location.x + ' ' + this.ourPlayer.location.y,
@@ -626,6 +626,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       this.emit('playerTeleported', ourPlayer);
     }
   }
+
   /**
    * Emit a teleport requested event for the current player that is requesting
    * to teleport to another player.
