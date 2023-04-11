@@ -640,6 +640,32 @@ describe('Town', () => {
         expect(player.location).toEqual(newLocation);
       });
     });
+    describe('playerTeleport', () => {
+      const teleportedLocation: PlayerLocation = {
+        x: 100,
+        y: 100,
+        rotation: 'front',
+        moving: false,
+      };
+      beforeEach(() => {
+        playerTestData.teleportTo(
+          teleportedLocation.x,
+          teleportedLocation.y,
+          teleportedLocation.rotation,
+          teleportedLocation.moving,
+        );
+      });
+
+      it('Emits a playerTeleport event', () => {
+        const lastEmittedMovement = getLastEmittedEvent(townEmitter, 'playerTeleported');
+        expect(lastEmittedMovement.id).toEqual(playerTestData.player?.id);
+        expect(lastEmittedMovement.location).toEqual(teleportedLocation);
+      });
+
+      it("Updates the player's location", () => {
+        expect(player.location).toEqual(teleportedLocation);
+      });
+    });
     describe('interactableUpdate', () => {
       let interactableUpdateCallback: (update: Interactable) => void;
       let update: ViewingAreaModel;

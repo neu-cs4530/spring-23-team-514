@@ -15,6 +15,7 @@ import {
   SocketData,
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  TeleportRequest,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
@@ -144,13 +145,37 @@ export default class Town {
     // Register an event listener for the client socket: if the client updates their
     // location, inform the CoveyTownController
     socket.on('playerMovement', (movementData: PlayerLocation) => {
-      this._updatePlayerLocation(newPlayer, movementData);
+      const movedPlayer = this._updatePlayerLocation(newPlayer, movementData);
+      this._broadcastEmitter.emit('playerMoved', movedPlayer.toPlayerModel());
     });
 
     // Register an event listener for the client socket: if the client updates their
     // location using teleport, inform the CoveyTownController
     socket.on('playerTeleport', (movementData: PlayerLocation) => {
-      this._updateAfterTeleport(newPlayer, movementData);
+      const movedPlayer = this._updatePlayerLocation(newPlayer, movementData);
+      this._broadcastEmitter.emit('playerTeleported', movedPlayer.toPlayerModel());
+    });
+
+    // Register an event listener for the client socket: if the client recieves a teleport
+    // request, inform the CoveyTownController so the user can accept/decline
+    socket.on('teleportRequest', (newRequest: TeleportRequest) => {
+      this._broadcastEmitter.emit('teleportRequested', {
+        from: newRequest.from,
+        to: newRequest.to,
+      });
+    });
+
+    // Register an event listern for the client socket: if the client recieves an accept for
+    // their teleport request, then move them to the player they requested
+    socket.on('teleportAccept', (acceptedRequest: TeleportRequest) => {
+      console.log('in backend teleport accept');
+      console.log(
+        `teleporting from ${acceptedRequest.from.userName} to ${acceptedRequest.to.userName}`,
+      );
+      this._broadcastEmitter.emit('teleportAccepted', {
+        from: acceptedRequest.from,
+        to: acceptedRequest.to,
+      });
     });
 
     // Set up a listener to process updates to interactables.
@@ -210,7 +235,7 @@ export default class Town {
    * @param player Player to update location for
    * @param location New location for this player
    */
-  private _updatePlayerLocation(player: Player, location: PlayerLocation): void {
+  private _updatePlayerLocation(player: Player, location: PlayerLocation): Player {
     const prevInteractable = this._interactables.find(
       conv => conv.id === player.location.interactableID,
     );
@@ -233,43 +258,7 @@ export default class Town {
 
     player.location = location;
 
-    this._broadcastEmitter.emit('playerMoved', player.toPlayerModel());
-  }
-
-  /**
-   * Updates the location of a player within the town
-   *
-   * If the player has changed conversation areas, this method also updates the
-   * corresponding ConversationArea objects tracked by the town controller, and dispatches
-   * any onConversationUpdated events as appropriate
-   *
-   * @param player Player to update location for
-   * @param location New location for this player
-   */
-  private _updateAfterTeleport(player: Player, location: PlayerLocation): void {
-    const prevInteractable = this._interactables.find(
-      conv => conv.id === player.location.interactableID,
-    );
-
-    if (!prevInteractable?.contains(location)) {
-      if (prevInteractable) {
-        // Remove from old area
-        prevInteractable.remove(player);
-      }
-      const newInteractable = this._interactables.find(
-        eachArea => eachArea.isActive && eachArea.contains(location),
-      );
-      if (newInteractable) {
-        newInteractable.add(player);
-      }
-      location.interactableID = newInteractable?.id;
-    } else {
-      location.interactableID = prevInteractable.id;
-    }
-
-    player.location = location;
-
-    this._broadcastEmitter.emit('playerTeleported', player.toPlayerModel());
+    return player;
   }
 
   /**

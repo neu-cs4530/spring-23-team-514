@@ -15,6 +15,8 @@ export type PlayerGameObjects = {
 export default class PlayerController extends (EventEmitter as new () => TypedEmitter<PlayerEvents>) {
   private _location: PlayerLocation;
 
+  private _preTeleportLocation?: PlayerLocation | undefined;
+
   private readonly _id: string;
 
   private readonly _userName: string;
@@ -38,6 +40,16 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
     return this._location;
   }
 
+  set preTeleportLocation(newLocation: PlayerLocation | undefined) {
+    if (newLocation) {
+      this._preTeleportLocation = newLocation;
+    }
+  }
+
+  get preTeleportLocation(): PlayerLocation | undefined {
+    return this._preTeleportLocation;
+  }
+
   get userName(): string {
     return this._userName;
   }
@@ -52,18 +64,36 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
 
   public teleport(newLocation: PlayerLocation) {
     // change player location without walking animations
-    console.log('new location:' + newLocation.x + ' ' + newLocation.y);
-    this._location = newLocation;
-    this._updateGameComponentLocation(true);
-    this.emit('movement', newLocation);
+    if (newLocation !== this._location) {
+      const tempLocation = {
+        x: this._location.x,
+        y: this._location.y,
+        rotation: this._location.rotation,
+        moving: this._location.moving,
+        interactableID: this._location.interactableID,
+      };
+      this._preTeleportLocation = tempLocation;
+      this._location = newLocation;
+      console.log('in PlayerController.teleport');
+      console.log(
+        'previous location:' + this._preTeleportLocation.x + ' ' + this._preTeleportLocation.y,
+      );
+      console.log('current location: ' + this._location.x + ' ' + this._location.y);
+      this._updateGameComponentLocation(true);
+      this.emit('movement', newLocation);
+    }
   }
 
   private _updateGameComponentLocation(teleport: boolean) {
-    if (this.gameObjects && !this.gameObjects.locationManagedByGameScene) {
+    if (this.gameObjects && (!this.gameObjects.locationManagedByGameScene || teleport)) {
       const { sprite, label } = this.gameObjects;
-      if (!sprite.anims) return;
+      if (!sprite.anims && !teleport) {
+        return;
+      }
       sprite.setX(this.location.x);
       sprite.setY(this.location.y);
+      console.log('in updateGameComponent');
+      console.log('new location:' + sprite.x + ' ' + sprite.y);
       label.setX(this.location.x);
       label.setY(this.location.y - 20);
       if (this.location.moving && !teleport) {

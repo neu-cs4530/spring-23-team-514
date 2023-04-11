@@ -155,6 +155,36 @@ describe('TownController', () => {
       //Uses the correct (new) location when emitting that update locally
       expect(expectedPlayerUpdate.location).toEqual(newLocation);
     });
+    it("Emits the local player's teleport update to the socket and to local CoveyTownEvents listeners", () => {
+      const teleportedLocation: PlayerLocation = {
+        x: 100,
+        y: 100,
+        rotation: 'front',
+        moving: false,
+      };
+      const teleportedPlayerModel: PlayerModel = {
+        id: nanoid(),
+        userName: nanoid(),
+        location: teleportedLocation,
+      };
+      const teleportedPlayer = PlayerController.fromPlayerModel(teleportedPlayerModel);
+      const expectedPlayerUpdate = testController.ourPlayer;
+      expectedPlayerUpdate.location = teleportedLocation;
+      const teleportedPlayerListener = jest.fn();
+
+      testController.addListener('playerTeleported', teleportedPlayerListener);
+
+      testController.emitTeleport(teleportedPlayer);
+
+      //Emits the event to the socket
+      expect(mockSocket.emit).toBeCalledWith('playerTeleport', teleportedLocation);
+
+      //Emits the playerTeleport event to locally subscribed listeners, indicating that the player teleported
+      expect(teleportedPlayerListener).toBeCalledWith(expectedPlayerUpdate);
+
+      //Uses the correct (new) location when emitting that update locally
+      expect(expectedPlayerUpdate.location).toEqual(teleportedLocation);
+    });
     it('Emits locally written chat messages to the socket, and dispatches no other events', () => {
       const testMessage: ChatMessage = {
         author: nanoid(),
@@ -512,6 +542,31 @@ describe('TownController', () => {
         testPlayer,
         'playerMoved',
         PlayerController.fromPlayerModel(testPlayer),
+      );
+    });
+    it('Emits playerTeleported events when players teleport', async () => {
+      const prevInteractableID = testPlayer.location.interactableID;
+      const prevRotation = testPlayer.location.rotation;
+      testPlayer.location = {
+        moving: false,
+        rotation: 'front',
+        x: 1,
+        y: 0,
+        interactableID: nanoid(),
+      };
+      const testPlayerController: PlayerController = PlayerController.fromPlayerModel(testPlayer);
+      testPlayerController.preTeleportLocation = {
+        moving: false,
+        rotation: prevRotation,
+        x: 0,
+        y: 1,
+        interactableID: prevInteractableID,
+      };
+      emitEventAndExpectListenerFiring(
+        'playerTeleported',
+        testPlayer,
+        'playerTeleported',
+        testPlayerController,
       );
     });
   });
