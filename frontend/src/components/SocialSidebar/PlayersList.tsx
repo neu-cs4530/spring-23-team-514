@@ -7,13 +7,13 @@ import {
   OrderedList,
   Tooltip,
   useToast,
-  ToastId,
 } from '@chakra-ui/react';
 import React from 'react';
 import PlayerController from '../../classes/PlayerController';
 import { usePlayers, useTeleportRequest } from '../../classes/TownController';
 import useTownController from '../../hooks/useTownController';
 import PlayerName from './PlayerName';
+import { TeleportRequest } from '../../types/CoveyTownSocket';
 
 /**
  * Lists the current players in the town, along with the current town's name and ID
@@ -40,6 +40,10 @@ export default function PlayersInTownList(): JSX.Element {
     townController.emitTeleportRequest(player);
   };
 
+  const handleTeleportAccept = (acceptedRequest: TeleportRequest) => {
+    townController.emitTeleportAccept(acceptedRequest);
+  };
+
   if (teleportRequest && teleportRequest.to.id === ourPlayer.id) {
     const { from } = teleportRequest;
     console.log('should toast');
@@ -55,7 +59,7 @@ export default function PlayersInTownList(): JSX.Element {
               color='green'
               onClick={() => {
                 console.log('accept teleport request');
-                // handleTeleportAccept(teleportRequest);
+                handleTeleportAccept(teleportRequest);
                 onClose();
               }}>
               confirm

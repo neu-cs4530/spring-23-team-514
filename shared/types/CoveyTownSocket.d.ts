@@ -86,6 +86,7 @@ export interface ServerToClientEvents {
   playerJoined: (newPlayer: Player) => void;
   initialize: (initialData: TownJoinResponse) => void;
   teleportRequested: (newRequest: TeleportRequest) => void;
+  teleportAccepted: (acceptedRequest: TeleportRequest) => void;
   townSettingsUpdated: (update: TownSettingsUpdate) => void;
   teleportRequested: (fromPlayer: Player, toPlayer: Player) => void;
   townClosing: () => void;
@@ -98,6 +99,6 @@ export interface ClientToServerEvents {
   playerMovement: (movementData: PlayerLocation) => void;
   playerTeleport: (movementData: PlayerLocation) => void;
   teleportRequest: (newRequest: TeleportRequest) => void;
-  teleportAccept: (fromPlayer: Player, toPlayer: Player) => void;
+  teleportAccept: (acceptedRequest: TeleportRequest) => void;
   interactableUpdate: (update: Interactable) => void;
 }

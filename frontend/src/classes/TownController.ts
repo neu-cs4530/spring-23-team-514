@@ -73,6 +73,11 @@ export type TownEvents = {
    */
   teleportRequested: (newRequest: TeleportRequest) => void;
   /**
+   * An event that indicates that a player has accepted a teleport request. This event is dispatched BEFORE updating the player's
+   * location. The player should be moved to the target player's location.
+   */
+  teleportAccepted: (acceptedRequest: TeleportRequest) => void;
+  /**
    * An event that indicates that the set of conversation areas has changed. This event is dispatched
    * when a conversation area is created, or when the set of active conversations has changed. This event is dispatched
    * after updating the town controller's record of conversation areas.
@@ -468,6 +473,26 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     });
 
     /**
+     * When a player accepts a teleport request, emit a player teleported event from the player
+     * who is teleporting.
+     */
+    this._socket.on('teleportAccepted', acceptedRequest => {
+      console.log('handling teleport accept');
+      const playerToUpdate = this.players.find(
+        eachPlayer => eachPlayer.id === acceptedRequest.from.id,
+      );
+      if (playerToUpdate) {
+        console.log('found player');
+        if (this._ourPlayer && playerToUpdate === this._ourPlayer) {
+          this.emitTeleport(PlayerController.fromPlayerModel(acceptedRequest.to));
+        }
+      } else {
+        console.log('could not find player');
+        console.log('looking for ' + acceptedRequest.from.userName);
+      }
+    });
+
+    /**
      * When a player requests to teleport another player, log that we received a request to teleport to our player
      */
     this._socket.on('teleportRequested', newRequest => {
@@ -558,7 +583,6 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       const newLocation = player.location;
       console.log('expected location: ' + player.location.x + ' ' + player.location.y);
       newLocation.moving = false;
-      newLocation.interactableID = this._viewingAreas[1].id;
       this._socket.emit('playerTeleport', newLocation);
       const ourPlayer = this._ourPlayer;
       assert(ourPlayer);
@@ -618,6 +642,29 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       console.log('our player:' + newRequest.from.userName);
       console.log('target player:' + newRequest.to.userName);
       this._socket.emit('teleportRequest', newRequest);
+    }
+  }
+
+  /**
+   * Emit a teleport event for an accepted teleport request accepted
+   * by our player.
+   *
+   * @param player: the player that this player is teleport to
+   */
+  public emitTeleportAccept(acceptedRequest: TeleportRequest) {
+    const ourPlayer = this._ourPlayer;
+    // confirm that we are the player who accepted the request.
+    if (ourPlayer && ourPlayer.id === acceptedRequest.to.id) {
+      console.log('emitting teleport accept to backend');
+      console.log(
+        `teleporting from ${acceptedRequest.from.userName} to ${acceptedRequest.to.userName}`,
+      );
+      this._socket.emit('teleportAccept', {
+        from: PlayerController.fromPlayerModel(acceptedRequest.from).toPlayerModel(),
+        to: PlayerController.fromPlayerModel(acceptedRequest.to).toPlayerModel(),
+      });
+    } else {
+      console.log('did not emit teleport accept');
     }
   }
 
