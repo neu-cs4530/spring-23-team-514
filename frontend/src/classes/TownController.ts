@@ -482,9 +482,9 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       } else {
         console.log(
           'received garbage teleport request. Our player is ' +
-            this.ourPlayer.userName +
-            ' and target player is ' +
-            requestAsPlayerController.to.userName,
+          this.ourPlayer.userName +
+          ' and target player is ' +
+          requestAsPlayerController.to.userName,
         );
       }
     });
@@ -568,27 +568,40 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
     }
   }
 
+  /**
+   * Emit a teleport event for the current player, specific to teleporting back, updating the state locally and
+   * also notifying the townService that our player moved via teleportation.
+   *
+   * Note: it is the responsibility of the townService to set the 'interactableID' parameter
+   * of the player's location, and any interactableID set here may be overwritten by the townService
+   *
+   */
   public emitTeleportBack() {
     console.log('teleport back emitter called');
     if (this.ourPlayer.preTeleportLocation) {
       this.ourPlayer.preTeleportLocation.moving = false;
       console.log(
         'previous location:' +
-          this.ourPlayer.preTeleportLocation.x +
-          ' ' +
-          this.ourPlayer.preTeleportLocation.y,
+        this.ourPlayer.preTeleportLocation.x +
+        ' ' +
+        this.ourPlayer.preTeleportLocation.y,
       );
       console.log(
         'current location: ' + this.ourPlayer.location.x + ' ' + this.ourPlayer.location.y,
       );
-      this._socket.emit('playerTeleport', this.ourPlayer.preTeleportLocation);
+      const locationTo: PlayerLocation = {
+        x: this.ourPlayer.preTeleportLocation.x,
+        y: this.ourPlayer.preTeleportLocation.y,
+        moving: this.ourPlayer.preTeleportLocation.moving,
+        rotation: this.ourPlayer.location.rotation,
+      };
+      this._socket.emit('playerTeleport', locationTo);
       const ourPlayer = this._ourPlayer;
       assert(ourPlayer);
-      ourPlayer.teleport(this.ourPlayer.preTeleportLocation);
+      ourPlayer.teleport(locationTo);
       this.emit('playerTeleported', ourPlayer);
     }
   }
-
   /**
    * Emit a teleport requested event for the current player that is requesting
    * to teleport to another player.
