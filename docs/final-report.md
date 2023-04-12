@@ -9,7 +9,7 @@ _Team 514 4/12/2023_
 Our demo site is available at: https://spring-23-team-514.netlify.app/.
 
 In order to build and run the code locally, you can download the code at: https://github.com/neu-cs4530/spring-23-team-514, by navigating to the release tag and downloading the zip file. \
-Once downloaded and unzipped, configure the backend and front credentials by following the process explained in the README.md in the repository, found at:
+Once downloaded and unzipped, configure the backend and frontend by following the process explained in the README.md in the repository, found at:
 https://github.com/neu-cs4530/spring-23-team-514#readme
 
 ### **Interaction:**
