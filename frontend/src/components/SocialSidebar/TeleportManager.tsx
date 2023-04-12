@@ -21,7 +21,6 @@ export default function TeleportManager(): JSX.Element {
 
   if (teleportRequest && teleportRequest.to.id === ourPlayer.id) {
     const { from } = teleportRequest;
-    console.log('should toast');
     toast({
       position: 'bottom-left',
       duration: 10000,
@@ -33,7 +32,6 @@ export default function TeleportManager(): JSX.Element {
               size='xs'
               color='green'
               onClick={() => {
-                console.log('accept teleport request');
                 handleTeleportAccept(teleportRequest);
                 onClose();
               }}>
@@ -43,7 +41,6 @@ export default function TeleportManager(): JSX.Element {
               size='xs'
               color='red'
               onClick={() => {
-                console.log('denied teleport request');
                 onClose();
               }}>
               deny
@@ -52,10 +49,6 @@ export default function TeleportManager(): JSX.Element {
         </Box>
       ),
     });
-  } else if (!teleportRequest) {
-    console.log('teleport request undefined');
-  } else {
-    console.log('teleport request not addressed to our player');
   }
 
   return <VisuallyHidden>Mock Element</VisuallyHidden>;
