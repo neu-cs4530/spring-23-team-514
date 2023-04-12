@@ -1,7 +1,6 @@
 import EventEmitter from 'events';
 import TypedEmitter from 'typed-emitter';
 import { Player as PlayerModel, PlayerLocation } from '../types/CoveyTownSocket';
-// import TownController from './TownController';
 
 export type PlayerEvents = {
   movement: (newLocation: PlayerLocation) => void;
@@ -74,11 +73,6 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
       };
       this._preTeleportLocation = tempLocation;
       this._location = newLocation;
-      console.log('in PlayerController.teleport');
-      console.log(
-        'previous location:' + this._preTeleportLocation.x + ' ' + this._preTeleportLocation.y,
-      );
-      console.log('current location: ' + this._location.x + ' ' + this._location.y);
       this._updateGameComponentLocation(true);
       this.emit('movement', newLocation);
     }
@@ -92,8 +86,6 @@ export default class PlayerController extends (EventEmitter as new () => TypedEm
       }
       sprite.setX(this.location.x);
       sprite.setY(this.location.y);
-      console.log('in updateGameComponent');
-      console.log('new location:' + sprite.x + ' ' + sprite.y);
       label.setX(this.location.x);
       label.setY(this.location.y - 20);
       if (this.location.moving && !teleport) {

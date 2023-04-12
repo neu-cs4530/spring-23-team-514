@@ -33,6 +33,7 @@ export interface Player {
 
 export type XY = { x: number, y: number };
 
+/* A teleport query data structure. Teleporting player [from] to player [to]. */
 export type TeleportRequest = { from: Player, to: Player };
 
 export interface PlayerLocation {
