@@ -1,6 +1,6 @@
 # Covey.Town
 
-**Final report can be found at [docs/final-reportmd](docs/final-reportmd).**
+**Final report can be found at [docs/final-reportmd](https://github.com/neu-cs4530/spring-23-team-514/blob/main/docs/final-report.md).**
 
 Covey.Town provides a virtual meeting space where different groups of people can have simultaneous video calls, allowing participants to drift between different conversations, just like in real life.
 Covey.Town was built for Northeastern's [Spring 2021 software engineering course](https://neu-se.github.io/CS4530-CS5500-Spring-2021/), and is designed to be reused across semesters.
