@@ -4,6 +4,11 @@ import useTownController from '../../hooks/useTownController';
 import { useTeleportRequest } from '../../classes/TownController';
 import { TeleportRequest } from '../../types/CoveyTownSocket';
 
+/**
+ * Manages notification for teleport requests: if a player receives a teleport request,
+ * it will be displayed as a notification. If the player then accepts the request,
+ * the player who made the request will be teleported to this player.
+ */
 export default function TeleportManager(): JSX.Element {
   const townController = useTownController();
   const { ourPlayer } = useTownController();

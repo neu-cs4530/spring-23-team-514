@@ -15,7 +15,8 @@ import useTownController from '../../hooks/useTownController';
 import PlayerName from './PlayerName';
 
 /**
- * Lists the current players in the town, along with the current town's name and ID
+ * Lists the current players in the town, along with the current town's name and ID.
+ * Player usernames can be clicked on to enable player teleport.
  *
  * See relevant hooks: `usePlayersInTown` and `useCoveyAppState`
  *
