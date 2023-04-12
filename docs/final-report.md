@@ -72,6 +72,31 @@ The teleport event dispatchers emitTeleport, emitTeleportBack, emitTeleportReque
 - **teleportRequest:** event for when a player sends a teleport request. Forwards the teleport request to all players, and displays a notification to the player who is supposed to receive the request. The teleport request is only stored/updated if the player receives a request meant for them, which appropriately triggers the notification to render.
 - **teleportAccept:** event for when a teleport request is accepted. Forwards the accepted request to all players, and triggers the teleport event emitter from the player who is supposed to teleport. We decided to trigger the teleport event emitter because trying to move the player from a different TownController in the teleportAccepted frontend handler causes issues with the player’s interactable ID since it is not updated consistently.
 
+Here is an example of event dispatch and component rendering for player A teleporting to player B:
+
+```mermaid
+sequenceDiagram
+	participant DA as Display A 
+	participant TCA as TownController A
+	participant T as Town
+	participant TCB as TownController B
+	participant DB as Display B
+	
+	DA->>DA: Player A clicks on Player B's name and confirms teleport
+	DA->>TCA: emitTeleportRequest(A->B)
+	TCA->>T: teleportRequest(A->B)
+	T->>TCB: teleportRequested(A->B)
+	TCB->>DB: teleportRequest changed
+	DB->>DB: Displays teleport request toast
+	DB->>TCB: emitTeleportAccept(A->B)
+	TCB->>T: teleportAccept(A->B)
+	T->>TCA: teleportAccepted(A->B)
+	TCA->>DA: move A to B's location
+	TCA->>T: playerTeleport(A)
+	T->>TCB: playerTeleported(A)
+	TCB->>DB: move A to B's location 
+```
+
 ## Process Overview
 
 ### Agile Strategies
