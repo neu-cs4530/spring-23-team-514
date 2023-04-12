@@ -1018,8 +1018,6 @@ export function usePlayers(): PlayerController[] {
  */
 export function useTeleportRequest(): TeleportRequest | undefined {
   const townController = useTownController();
-  const { ourPlayer } = useTownController();
-  const toast = useToast();
   const [teleportRequest, setTeleportRequest] = useState<TeleportRequest | undefined>(
     townController.teleportRequest,
   );

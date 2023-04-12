@@ -1,7 +1,5 @@
 import { Box, Button, HStack, VisuallyHidden, useToast } from '@chakra-ui/react';
 import React from 'react';
-import ConversationAreasList from './ConversationAreasList';
-import PlayersList from './PlayersList';
 import useTownController from '../../hooks/useTownController';
 import { useTeleportRequest } from '../../classes/TownController';
 import { TeleportRequest } from '../../types/CoveyTownSocket';

@@ -10,10 +10,9 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import PlayerController from '../../classes/PlayerController';
-import { usePlayers, useTeleportRequest } from '../../classes/TownController';
+import { usePlayers } from '../../classes/TownController';
 import useTownController from '../../hooks/useTownController';
 import PlayerName from './PlayerName';
-import { TeleportRequest } from '../../types/CoveyTownSocket';
 
 /**
  * Lists the current players in the town, along with the current town's name and ID
