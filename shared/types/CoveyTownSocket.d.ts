@@ -89,7 +89,6 @@ export interface ServerToClientEvents {
   teleportRequested: (newRequest: TeleportRequest) => void;
   teleportAccepted: (acceptedRequest: TeleportRequest) => void;
   townSettingsUpdated: (update: TownSettingsUpdate) => void;
-  teleportRequested: (fromPlayer: Player, toPlayer: Player) => void;
   townClosing: () => void;
   chatMessage: (message: ChatMessage) => void;
   interactableUpdate: (interactable: Interactable) => void;
