@@ -179,18 +179,6 @@ export class MockedPlayer {
     const onAcceptListener = getEventListener(this.socket, 'teleportAccept');
     onAcceptListener({ from, to });
   }
-
-  // Mocks player teleportRequest event
-  requestTeleport(from: Player, to: Player): void {
-    const onRequestListener = getEventListener(this.socket, 'teleportRequest');
-    onRequestListener({ from, to });
-  }
-
-  // Mocks player teleportation event
-  acceptRequest(from: Player, to: Player): void {
-    const onAcceptListener = getEventListener(this.socket, 'teleportAccept');
-    onAcceptListener({ from, to });
-  }
 }
 
 /**
