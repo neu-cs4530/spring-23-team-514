@@ -24,6 +24,7 @@ import ConversationAreaController from './ConversationAreaController';
 import PlayerController from './PlayerController';
 import ViewingAreaController from './ViewingAreaController';
 import PosterSessionAreaController from './PosterSessionAreaController';
+import { useToast } from '@chakra-ui/react';
 
 const CALCULATE_NEARBY_PLAYERS_DELAY = 300;
 
@@ -1017,9 +1018,12 @@ export function usePlayers(): PlayerController[] {
  */
 export function useTeleportRequest(): TeleportRequest | undefined {
   const townController = useTownController();
+  const { ourPlayer } = useTownController();
+  const toast = useToast();
   const [teleportRequest, setTeleportRequest] = useState<TeleportRequest | undefined>(
     townController.teleportRequest,
   );
+
   useEffect(() => {
     townController.addListener('teleportRequested', setTeleportRequest);
     return () => {
