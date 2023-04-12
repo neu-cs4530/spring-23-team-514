@@ -165,13 +165,9 @@ export default class Town {
       });
     });
 
-    // Register an event listern for the client socket: if the client recieves an accept for
+    // Register an event listener for the client socket: if the client recieves an accept for
     // their teleport request, then move them to the player they requested
     socket.on('teleportAccept', (acceptedRequest: TeleportRequest) => {
-      console.log('in backend teleport accept');
-      console.log(
-        `teleporting from ${acceptedRequest.from.userName} to ${acceptedRequest.to.userName}`,
-      );
       this._broadcastEmitter.emit('teleportAccepted', {
         from: acceptedRequest.from,
         to: acceptedRequest.to,
