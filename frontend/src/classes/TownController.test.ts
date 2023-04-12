@@ -185,6 +185,51 @@ describe('TownController', () => {
       //Uses the correct (new) location when emitting that update locally
       expect(expectedPlayerUpdate.location).toEqual(teleportedLocation);
     });
+    it('Emits teleport request to backend', () => {
+      const toPlayerLocation: PlayerLocation = {
+        x: 100,
+        y: 100,
+        rotation: 'front',
+        moving: false,
+      };
+      const toPlayerModel: PlayerModel = {
+        id: nanoid(),
+        userName: nanoid(),
+        location: toPlayerLocation,
+      };
+      const request = { from: testController.ourPlayer.toPlayerModel(), to: toPlayerModel };
+      const toPlayer = PlayerController.fromPlayerModel(toPlayerModel);
+      const requestPlayerListener = jest.fn();
+
+      testController.addListener('teleportRequested', requestPlayerListener);
+
+      testController.emitTeleportRequest(toPlayer);
+
+      //Emits the event to the socket
+      expect(mockSocket.emit).toBeCalledWith('teleportRequest', request);
+    });
+    it('Emits the teleport accept to backend', () => {
+      const toPlayerLocation: PlayerLocation = {
+        x: 100,
+        y: 100,
+        rotation: 'front',
+        moving: false,
+      };
+      const toPlayerModel: PlayerModel = {
+        id: nanoid(),
+        userName: nanoid(),
+        location: toPlayerLocation,
+      };
+      const request = { from: toPlayerModel, to: testController.ourPlayer.toPlayerModel() };
+      const requestPlayerListener = jest.fn();
+
+      testController.addListener('teleportAccepted', requestPlayerListener);
+
+      testController.emitTeleportAccept(request);
+
+      //Emits the event to the socket
+      expect(mockSocket.emit).toBeCalledWith('teleportAccept', request);
+    });
     it('Emits locally written chat messages to the socket, and dispatches no other events', () => {
       const testMessage: ChatMessage = {
         author: nanoid(),

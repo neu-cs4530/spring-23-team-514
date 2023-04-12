@@ -666,6 +666,31 @@ describe('Town', () => {
         expect(player.location).toEqual(teleportedLocation);
       });
     });
+
+    describe('teleportRequest', () => {
+      const toPlayerModel = new Player(nanoid(), townEmitter);
+      const fromPlayerModel = new Player(nanoid(), townEmitter);
+      beforeEach(() => {
+        playerTestData.requestTeleport(fromPlayerModel, toPlayerModel);
+      });
+      it('Emits a teleportRequest event', () => {
+        const lastEmmitedRequest = getLastEmittedEvent(townEmitter, 'teleportRequested');
+        expect(lastEmmitedRequest.from).toEqual(fromPlayerModel);
+        expect(lastEmmitedRequest.to).toEqual(toPlayerModel);
+      });
+    });
+    describe('teleportAccept', () => {
+      const toPlayerModel = new Player(nanoid(), townEmitter);
+      const fromPlayerModel = new Player(nanoid(), townEmitter);
+      beforeEach(() => {
+        playerTestData.acceptRequest(fromPlayerModel, toPlayerModel);
+      });
+      it('Emits a teleportAccept event', () => {
+        const lastEmmitedAccept = getLastEmittedEvent(townEmitter, 'teleportAccepted');
+        expect(lastEmmitedAccept.from).toEqual(fromPlayerModel);
+        expect(lastEmmitedAccept.to).toEqual(toPlayerModel);
+      });
+    });
     describe('interactableUpdate', () => {
       let interactableUpdateCallback: (update: Interactable) => void;
       let update: ViewingAreaModel;
