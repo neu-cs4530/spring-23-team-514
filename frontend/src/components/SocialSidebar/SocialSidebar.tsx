@@ -3,6 +3,7 @@ import React from 'react';
 import ConversationAreasList from './ConversationAreasList';
 import PlayersList from './PlayersList';
 import useTownController from '../../hooks/useTownController';
+import TeleportManager from './TeleportManager';
 
 export default function SocialSidebar(): JSX.Element {
   const townController = useTownController();
@@ -35,6 +36,7 @@ export default function SocialSidebar(): JSX.Element {
       </Button>
       <PlayersList />
       <ConversationAreasList />
+      <TeleportManager />
     </VStack>
   );
 }
