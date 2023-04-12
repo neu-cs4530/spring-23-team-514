@@ -1,11 +1,14 @@
 import { Box, Button, HStack, VisuallyHidden, useToast } from '@chakra-ui/react';
 import React from 'react';
-import ConversationAreasList from './ConversationAreasList';
-import PlayersList from './PlayersList';
 import useTownController from '../../hooks/useTownController';
 import { useTeleportRequest } from '../../classes/TownController';
 import { TeleportRequest } from '../../types/CoveyTownSocket';
 
+/**
+ * Manages notification for teleport requests: if a player receives a teleport request,
+ * it will be displayed as a notification. If the player then accepts the request,
+ * the player who made the request will be teleported to this player.
+ */
 export default function TeleportManager(): JSX.Element {
   const townController = useTownController();
   const { ourPlayer } = useTownController();
@@ -18,7 +21,6 @@ export default function TeleportManager(): JSX.Element {
 
   if (teleportRequest && teleportRequest.to.id === ourPlayer.id) {
     const { from } = teleportRequest;
-    console.log('should toast');
     toast({
       position: 'bottom-left',
       duration: 10000,
@@ -30,7 +32,6 @@ export default function TeleportManager(): JSX.Element {
               size='xs'
               color='green'
               onClick={() => {
-                console.log('accept teleport request');
                 handleTeleportAccept(teleportRequest);
                 onClose();
               }}>
@@ -40,7 +41,6 @@ export default function TeleportManager(): JSX.Element {
               size='xs'
               color='red'
               onClick={() => {
-                console.log('denied teleport request');
                 onClose();
               }}>
               deny
@@ -49,10 +49,6 @@ export default function TeleportManager(): JSX.Element {
         </Box>
       ),
     });
-  } else if (!teleportRequest) {
-    console.log('teleport request undefined');
-  } else {
-    console.log('teleport request not addressed to our player');
   }
 
   return <VisuallyHidden>Mock Element</VisuallyHidden>;

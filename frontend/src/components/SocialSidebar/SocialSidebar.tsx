@@ -29,7 +29,6 @@ export default function SocialSidebar(): JSX.Element {
       <Button
         color='blue'
         onClick={() => {
-          console.log('teleport back');
           handleTeleportBack();
         }}>
         Teleport Back

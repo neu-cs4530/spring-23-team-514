@@ -10,13 +10,13 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import PlayerController from '../../classes/PlayerController';
-import { usePlayers, useTeleportRequest } from '../../classes/TownController';
+import { usePlayers } from '../../classes/TownController';
 import useTownController from '../../hooks/useTownController';
 import PlayerName from './PlayerName';
-import { TeleportRequest } from '../../types/CoveyTownSocket';
 
 /**
- * Lists the current players in the town, along with the current town's name and ID
+ * Lists the current players in the town, along with the current town's name and ID.
+ * Player usernames can be clicked on to enable player teleport.
  *
  * See relevant hooks: `usePlayersInTown` and `useCoveyAppState`
  *
@@ -59,8 +59,6 @@ export default function PlayersInTownList(): JSX.Element {
                             size='xs'
                             color='green'
                             onClick={() => {
-                              console.log('accept teleport confirm');
-                              // handleTeleport(player);
                               handleTeleportRequest(player);
                               onClose();
                             }}>
