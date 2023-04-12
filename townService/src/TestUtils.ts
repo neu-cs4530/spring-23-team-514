@@ -164,8 +164,20 @@ export class MockedPlayer {
 
   // Mocks player teleportation event
   teleportTo(x: number, y: number, rotation: Direction = 'front', moving = false): void {
-    const onMovementListener = getEventListener(this.socket, 'playerTeleport');
-    onMovementListener({ x, y, rotation, moving });
+    const onTeleportListener = getEventListener(this.socket, 'playerTeleport');
+    onTeleportListener({ x, y, rotation, moving });
+  }
+
+  // Mocks player teleportRequest event
+  requestTeleport(from: Player, to: Player): void {
+    const onRequestListener = getEventListener(this.socket, 'teleportRequest');
+    onRequestListener({ from, to });
+  }
+
+  // Mocks player teleportation event
+  acceptRequest(from: Player, to: Player): void {
+    const onAcceptListener = getEventListener(this.socket, 'teleportAccept');
+    onAcceptListener({ from, to });
   }
 
   // Mocks player teleportRequest event
