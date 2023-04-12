@@ -67,9 +67,14 @@ class TownController{
     +boolean paused
     +Player[] players
     +ConversationArea[] conversationAreas
+    +TeleportRequest teleportRequest
     +disconnect()
     +connect()
     +emitMovement(newLocation)
+    +emitTeleport(player)
+    +emitTeleportBack()
+    +emitTeleportRequest(player)
+    +emitTeleportAccept(acceptedRequest)
     +emitChatMessage(chatMessage)
     +addListener(eventName, listener)
     +removeListener(eventName, listener)
@@ -93,18 +98,22 @@ export interface ServerToClientEvents {
   playerDisconnect: (disconnectedPlayer: Player) => void;
   playerJoined: (newPlayer: Player) => void;
   initialize: (initialData: TownJoinResponse) => void;
-  teleportRequested: (fromPlayer: Player, toPlayer: Player) => void;
+  teleportRequested: (newRequest: TeleportRequest) => void;
+  teleportAccepted: (acceptedRequest: TeleportRequest) => void;
   townSettingsUpdated: (update: TownSettingsUpdate) => void;
+  teleportRequested: (fromPlayer: Player, toPlayer: Player) => void;
   townClosing: () => void;
-  conversationAreaUpdated: (conversationArea: ConversationArea) => void;
-  conversationAreaDestroyed: (conversationArea: ConversationArea) => void;
   chatMessage: (message: ChatMessage) => void;
+  interactableUpdate: (interactable: Interactable) => void;
 }
 
 export interface ClientToServerEvents {
   chatMessage: (message: ChatMessage) => void;
   playerMovement: (movementData: PlayerLocation) => void;
-  playerTeleport: (teleportData: PlayerLocation) => void;
+  playerTeleport: (movementData: PlayerLocation) => void;
+  teleportRequest: (newRequest: TeleportRequest) => void;
+  teleportAccept: (acceptedRequest: TeleportRequest) => void;
+  interactableUpdate: (update: Interactable) => void;
 }
 ```
 
